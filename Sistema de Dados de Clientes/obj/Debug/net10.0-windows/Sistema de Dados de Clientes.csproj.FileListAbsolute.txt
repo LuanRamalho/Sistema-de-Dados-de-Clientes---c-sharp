@@ -1,0 +1,14 @@
+E:\Meus Documentos\Programas Desenvolvidos\C# - Prgramas Desenvolvidos\Sistema de Dados de Clientes\bin\Debug\net10.0-windows\Sistema de Dados de Clientes.exe
+E:\Meus Documentos\Programas Desenvolvidos\C# - Prgramas Desenvolvidos\Sistema de Dados de Clientes\bin\Debug\net10.0-windows\Sistema de Dados de Clientes.deps.json
+E:\Meus Documentos\Programas Desenvolvidos\C# - Prgramas Desenvolvidos\Sistema de Dados de Clientes\bin\Debug\net10.0-windows\Sistema de Dados de Clientes.runtimeconfig.json
+E:\Meus Documentos\Programas Desenvolvidos\C# - Prgramas Desenvolvidos\Sistema de Dados de Clientes\bin\Debug\net10.0-windows\Sistema de Dados de Clientes.dll
+E:\Meus Documentos\Programas Desenvolvidos\C# - Prgramas Desenvolvidos\Sistema de Dados de Clientes\bin\Debug\net10.0-windows\Sistema de Dados de Clientes.pdb
+E:\Meus Documentos\Programas Desenvolvidos\C# - Prgramas Desenvolvidos\Sistema de Dados de Clientes\obj\Debug\net10.0-windows\Sistema de Dados de Clientes.GeneratedMSBuildEditorConfig.editorconfig
+E:\Meus Documentos\Programas Desenvolvidos\C# - Prgramas Desenvolvidos\Sistema de Dados de Clientes\obj\Debug\net10.0-windows\Sistema de Dados de Clientes.AssemblyInfoInputs.cache
+E:\Meus Documentos\Programas Desenvolvidos\C# - Prgramas Desenvolvidos\Sistema de Dados de Clientes\obj\Debug\net10.0-windows\Sistema de Dados de Clientes.AssemblyInfo.cs
+E:\Meus Documentos\Programas Desenvolvidos\C# - Prgramas Desenvolvidos\Sistema de Dados de Clientes\obj\Debug\net10.0-windows\Sistema de Dados de Clientes.csproj.CoreCompileInputs.cache
+E:\Meus Documentos\Programas Desenvolvidos\C# - Prgramas Desenvolvidos\Sistema de Dados de Clientes\obj\Debug\net10.0-windows\Sistema de Dados de Clientes.dll
+E:\Meus Documentos\Programas Desenvolvidos\C# - Prgramas Desenvolvidos\Sistema de Dados de Clientes\obj\Debug\net10.0-windows\refint\Sistema de Dados de Clientes.dll
+E:\Meus Documentos\Programas Desenvolvidos\C# - Prgramas Desenvolvidos\Sistema de Dados de Clientes\obj\Debug\net10.0-windows\Sistema de Dados de Clientes.pdb
+E:\Meus Documentos\Programas Desenvolvidos\C# - Prgramas Desenvolvidos\Sistema de Dados de Clientes\obj\Debug\net10.0-windows\Sistema de Dados de Clientes.genruntimeconfig.cache
+E:\Meus Documentos\Programas Desenvolvidos\C# - Prgramas Desenvolvidos\Sistema de Dados de Clientes\obj\Debug\net10.0-windows\ref\Sistema de Dados de Clientes.dll
