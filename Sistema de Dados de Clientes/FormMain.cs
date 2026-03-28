@@ -12,53 +12,58 @@ namespace SistemaCRM
     {
         private List<Cliente> clientes = new List<Cliente>();
         private readonly string databaseFile = "crm_data.json";
-
-        private DataGridView gridClientes;
-        private TextBox txtBusca;
-        private Button btnAdicionar, btnEditar, btnExcluir, btnBuscar;
+        
+        private FlowLayoutPanel panelCards = null!; // '!' avisa o compilador que será inicializado
+        private TextBox txtBusca = null!;
+        private Button btnAdicionar = null!, btnEditar = null!, btnExcluir = null!, btnBuscar = null!;
+        private Cliente? clienteSelecionado = null;
 
         public FormMain()
         {
             ConfigurarInterface();
             CarregarDados();
-            AtualizarGrid();
+            AtualizarCards();
         }
 
         private void ConfigurarInterface()
         {
-            this.Text = "Sistema de CRM Moderno";
-            this.Size = new Size(900, 600);
+            this.Text = "Sistema de CRM Moderno - Visual em Cards";
+            this.Size = new Size(1000, 700);
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.BackColor = Color.FromArgb(224, 242, 247);
+            this.BackColor = Color.FromArgb(240, 245, 247);
+            this.Font = new Font("Segoe UI", 10);
 
-            Panel panelTop = new Panel { Dock = DockStyle.Top, Height = 80, Padding = new Padding(10) };
-            Label lblBusca = new Label { Text = "Buscar Cliente:", Location = new Point(15, 25), AutoSize = true, Font = new Font("Arial", 12, FontStyle.Bold) };
-            txtBusca = new TextBox { Location = new Point(140, 22), Width = 400, Font = new Font("Arial", 12) };
-            btnBuscar = CreateButton("Buscar", new Point(550, 18), Color.FromArgb(126, 3, 167));
+            // --- Painel Superior (Busca) ---
+            Panel panelTop = new Panel { Dock = DockStyle.Top, Height = 80, Padding = new Padding(10), BackColor = Color.White };
+            
+            Label lblBusca = new Label { Text = "Buscar Cliente:", Location = new Point(20, 25), AutoSize = true, Font = new Font("Segoe UI", 11, FontStyle.Bold) };
+            txtBusca = new TextBox { Location = new Point(150, 22), Width = 400, Font = new Font("Segoe UI", 12) };
+            
+            btnBuscar = CreateButton("Buscar", new Point(560, 18), Color.FromArgb(126, 3, 167));
             btnBuscar.Click += (s, e) => FiltrarClientes();
 
             panelTop.Controls.AddRange(new Control[] { lblBusca, txtBusca, btnBuscar });
 
-            gridClientes = new DataGridView
-            {
+            // --- Container de Cards ---
+            panelCards = new FlowLayoutPanel {
                 Dock = DockStyle.Fill,
-                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
-                BackgroundColor = Color.White,
-                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-                MultiSelect = false,
-                ReadOnly = true,
-                AllowUserToAddRows = false,
-                BorderStyle = BorderStyle.None,
-                ColumnHeadersHeight = 40
+                AutoScroll = true,
+                Padding = new Padding(20),
+                BackColor = Color.FromArgb(245, 245, 250)
             };
-            gridClientes.EnableHeadersVisualStyles = false;
-            gridClientes.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(208, 224, 227);
-            gridClientes.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 10, FontStyle.Bold);
 
-            FlowLayoutPanel panelBottom = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 70, FlowDirection = FlowDirection.LeftToRight, Padding = new Padding(10) };
+            // --- Painel Inferior (Ações) ---
+            FlowLayoutPanel panelBottom = new FlowLayoutPanel { 
+                Dock = DockStyle.Bottom, 
+                Height = 80, 
+                Padding = new Padding(15), 
+                BackColor = Color.White,
+                FlowDirection = FlowDirection.LeftToRight
+            };
+
             btnAdicionar = CreateButton("Adicionar Cliente", Point.Empty, Color.FromArgb(0, 127, 108));
-            btnEditar = CreateButton("Editar Cliente", Point.Empty, Color.FromArgb(121, 122, 0));
-            btnExcluir = CreateButton("Excluir Cliente", Point.Empty, Color.FromArgb(200, 136, 0));
+            btnEditar = CreateButton("Editar Selecionado", Point.Empty, Color.FromArgb(121, 122, 0));
+            btnExcluir = CreateButton("Excluir Selecionado", Point.Empty, Color.FromArgb(200, 136, 0));
 
             btnAdicionar.Click += (s, e) => AbrirFormularioCliente(null);
             btnEditar.Click += (s, e) => EditarSelecionado();
@@ -66,37 +71,62 @@ namespace SistemaCRM
 
             panelBottom.Controls.AddRange(new Control[] { btnAdicionar, btnEditar, btnExcluir });
 
-            this.Controls.Add(gridClientes);
+            this.Controls.Add(panelCards);
             this.Controls.Add(panelTop);
             this.Controls.Add(panelBottom);
         }
 
-        private Button CreateButton(string text, Point location, Color color)
+        private Panel CriarCard(Cliente cliente)
         {
-            return new Button
-            {
-                Text = text,
-                Location = location,
-                Size = new Size(160, 40),
-                BackColor = color,
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Font = new Font("Arial", 10, FontStyle.Bold),
-                Cursor = Cursors.Hand
+            Panel card = new Panel {
+                Width = 280, Height = 160,
+                BackColor = Color.White,
+                Margin = new Padding(12),
+                Cursor = Cursors.Hand,
+                BorderStyle = BorderStyle.FixedSingle,
+                Tag = cliente
             };
+
+            Label lblNome = new Label { Text = cliente.Nome, Font = new Font("Segoe UI", 12, FontStyle.Bold), Location = new Point(15, 15), Width = 250, AutoSize = false };
+            Label lblEmail = new Label { Text = "📧 " + cliente.Email, Location = new Point(15, 50), Width = 250, ForeColor = Color.DimGray };
+            Label lblTel = new Label { Text = "📞 " + cliente.Telefone, Location = new Point(15, 75), Width = 250, ForeColor = Color.DimGray };
+            Label lblEnd = new Label { Text = "📍 " + cliente.Endereco, Location = new Point(15, 100), Width = 250, Height = 50, ForeColor = Color.DimGray, Font = new Font("Segoe UI", 8.5f) };
+
+            Control[] innerControls = { lblNome, lblEmail, lblTel, lblEnd };
+            foreach (var ctrl in innerControls) {
+                ctrl.Click += (s, e) => SelecionarCard(card, cliente);
+                card.Controls.Add(ctrl);
+            }
+            card.Click += (s, e) => SelecionarCard(card, cliente);
+
+            return card;
+        }
+
+        private void SelecionarCard(Panel card, Cliente cliente)
+        {
+            clienteSelecionado = cliente;
+            foreach (Control c in panelCards.Controls) {
+                if (c is Panel p) p.BackColor = Color.White;
+            }
+            card.BackColor = Color.FromArgb(220, 235, 255);
+        }
+
+        private void AtualizarCards(List<Cliente>? listaSource = null)
+        {
+            panelCards.Controls.Clear();
+            clienteSelecionado = null;
+            var lista = listaSource ?? clientes;
+            foreach (var c in lista) panelCards.Controls.Add(CriarCard(c));
         }
 
         private void CarregarDados()
         {
-            try 
-            {
-                if (File.Exists(databaseFile))
-                {
+            if (File.Exists(databaseFile)) {
+                try {
                     string json = File.ReadAllText(databaseFile);
                     clientes = JsonSerializer.Deserialize<List<Cliente>>(json) ?? new List<Cliente>();
-                }
+                } catch { clientes = new List<Cliente>(); }
             }
-            catch { clientes = new List<Cliente>(); }
         }
 
         private void SalvarDados()
@@ -105,117 +135,96 @@ namespace SistemaCRM
             File.WriteAllText(databaseFile, json);
         }
 
-        private void AtualizarGrid(List<Cliente> listaSource = null)
-        {
-            // Vincula a lista diretamente para evitar erros de índice manual
-            gridClientes.DataSource = null;
-            gridClientes.DataSource = (listaSource ?? clientes).ToList();
-        }
-
         private void FiltrarClientes()
         {
-            var termo = txtBusca.Text.ToLower();
+            string t = txtBusca.Text.ToLower();
             var filtrados = clientes.Where(c => 
-                (c.Nome?.ToLower().Contains(termo) ?? false) || 
-                (c.Email?.ToLower().Contains(termo) ?? false)
+                (c.Nome?.ToLower().Contains(t) ?? false) || 
+                (c.Email?.ToLower().Contains(t) ?? false)
             ).ToList();
-            AtualizarGrid(filtrados);
+            AtualizarCards(filtrados);
         }
 
         private void ExcluirSelecionado()
         {
-            // Verificação de segurança para evitar o erro de índice -1
-            if (gridClientes.CurrentRow != null && gridClientes.CurrentRow.DataBoundItem is Cliente cliente)
-            {
-                if (MessageBox.Show($"Deseja excluir {cliente.Nome}?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    clientes.Remove(cliente);
-                    SalvarDados();
-                    AtualizarGrid();
-                }
+            if (clienteSelecionado == null) {
+                MessageBox.Show("Selecione um cliente clicando no card.", "Aviso");
+                return;
             }
-            else
-            {
-                MessageBox.Show("Por favor, selecione um cliente na lista primeiro.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            if (MessageBox.Show($"Excluir {clienteSelecionado.Nome}?", "Confirmar", MessageBoxButtons.YesNo) == DialogResult.Yes) {
+                clientes.Remove(clienteSelecionado);
+                SalvarDados();
+                AtualizarCards();
             }
         }
 
         private void EditarSelecionado()
         {
-            // Verificação de segurança para evitar o erro de índice -1
-            if (gridClientes.CurrentRow != null && gridClientes.CurrentRow.DataBoundItem is Cliente cliente)
-            {
-                AbrirFormularioCliente(cliente);
+            if (clienteSelecionado == null) {
+                MessageBox.Show("Selecione um cliente primeiro.", "Aviso");
+                return;
             }
-            else
-            {
-                MessageBox.Show("Por favor, selecione um cliente na lista primeiro.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            AbrirFormularioCliente(clienteSelecionado);
+        }
+
+        private void AbrirFormularioCliente(Cliente? cliente)
+        {
+            using (var form = new FormEdicaoCliente(cliente)) {
+                if (form.ShowDialog() == DialogResult.OK) {
+                    if (cliente == null && form.ClienteResult != null) 
+                        clientes.Add(form.ClienteResult);
+                    
+                    SalvarDados();
+                    AtualizarCards();
+                }
             }
         }
 
-        private void AbrirFormularioCliente(Cliente clienteExistente)
+        private Button CreateButton(string text, Point loc, Color color)
         {
-            Form form = new Form
-            {
-                Text = clienteExistente == null ? "Novo Cliente" : "Editar Cliente",
-                Size = new Size(400, 380),
-                StartPosition = FormStartPosition.CenterParent,
-                FormBorderStyle = FormBorderStyle.FixedDialog,
-                MaximizeBox = false,
-                MinimizeBox = false
+            return new Button {
+                Text = text, Location = loc, Size = new Size(170, 45),
+                BackColor = color, ForeColor = Color.White, FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold), Cursor = Cursors.Hand,
+                Margin = new Padding(5)
             };
+        }
+    }
 
-            Label CreateLabel(string txt, int y) => new Label { Text = txt, Location = new Point(20, y), AutoSize = true, Font = new Font("Arial", 9, FontStyle.Bold) };
-            TextBox CreateTxt(string val, int y) => new TextBox { Text = val, Location = new Point(20, y + 20), Width = 340, Font = new Font("Arial", 10) };
+    public class FormEdicaoCliente : Form {
+        public Cliente? ClienteResult { get; private set; }
+        private TextBox tNome, tEnd, tTel, tEmail;
 
-            var txtNome = CreateTxt(clienteExistente?.Nome ?? "", 20);
-            var txtEnd = CreateTxt(clienteExistente?.Endereco ?? "", 80);
-            var txtTel = CreateTxt(clienteExistente?.Telefone ?? "", 140);
-            var txtEmail = CreateTxt(clienteExistente?.Email ?? "", 200);
+        public FormEdicaoCliente(Cliente? c) {
+            this.Text = c == null ? "Novo Cliente" : "Editar Cliente";
+            this.Size = new Size(400, 450);
+            this.StartPosition = FormStartPosition.CenterParent;
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
 
-            Button btnSalvar = new Button { 
-                Text = "Salvar", 
-                Location = new Point(140, 280), 
-                Size = new Size(100, 40), 
-                BackColor = Color.FromArgb(0, 127, 108), 
-                ForeColor = Color.White, 
-                FlatStyle = FlatStyle.Flat,
-                Font = new Font("Arial", 10, FontStyle.Bold)
-            };
+            Label l1 = new Label { Text = "Nome:", Location = new Point(20, 20), AutoSize = true };
+            tNome = new TextBox { Location = new Point(20, 40), Width = 340, Text = c?.Nome };
 
+            Label l2 = new Label { Text = "Endereço:", Location = new Point(20, 90), AutoSize = true };
+            tEnd = new TextBox { Location = new Point(20, 110), Width = 340, Text = c?.Endereco };
+
+            Label l3 = new Label { Text = "Telefone:", Location = new Point(20, 160), AutoSize = true };
+            tTel = new TextBox { Location = new Point(20, 180), Width = 340, Text = c?.Telefone };
+
+            Label l4 = new Label { Text = "Email:", Location = new Point(20, 230), AutoSize = true };
+            tEmail = new TextBox { Location = new Point(20, 250), Width = 340, Text = c?.Email };
+
+            Button btnSalvar = new Button { Text = "Salvar", Location = new Point(130, 330), Size = new Size(120, 40), BackColor = Color.Green, ForeColor = Color.White, FlatStyle = FlatStyle.Flat };
             btnSalvar.Click += (s, e) => {
-                if (string.IsNullOrWhiteSpace(txtNome.Text)) {
-                    MessageBox.Show("O campo Nome é obrigatório!", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                if (clienteExistente == null) {
-                    clientes.Add(new Cliente { 
-                        Nome = txtNome.Text, 
-                        Endereco = txtEnd.Text, 
-                        Telefone = txtTel.Text, 
-                        Email = txtEmail.Text 
-                    });
-                } else {
-                    clienteExistente.Nome = txtNome.Text;
-                    clienteExistente.Endereco = txtEnd.Text;
-                    clienteExistente.Telefone = txtTel.Text;
-                    clienteExistente.Email = txtEmail.Text;
-                }
-
-                SalvarDados();
-                AtualizarGrid();
-                form.Close();
+                ClienteResult = c ?? new Cliente();
+                ClienteResult.Nome = tNome.Text;
+                ClienteResult.Endereco = tEnd.Text;
+                ClienteResult.Telefone = tTel.Text;
+                ClienteResult.Email = tEmail.Text;
+                this.DialogResult = DialogResult.OK;
             };
 
-            form.Controls.AddRange(new Control[] { 
-                CreateLabel("Nome:", 20), txtNome, 
-                CreateLabel("Endereço:", 80), txtEnd, 
-                CreateLabel("Telefone:", 140), txtTel, 
-                CreateLabel("Email:", 200), txtEmail, 
-                btnSalvar 
-            });
-            form.ShowDialog();
+            this.Controls.AddRange(new Control[] { l1, tNome, l2, tEnd, l3, tTel, l4, tEmail, btnSalvar });
         }
     }
 }
